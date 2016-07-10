@@ -13,31 +13,39 @@ public abstract class VertexNetwork {
 	/** A list of edges in the network*/
 	protected Vector<Edge> edges;
 
-	/** This constructor creates an empty list of vertex locations,
-		an empty list of edges, and the transmission range is set to 0.0. */
+	/**
+	 * This constructor creates an empty list of vertex locations,
+	 * an empty list of edges, and the transmission range is set to 0.0.
+	 */
 	VertexNetwork() {
 		transmissionRange = 0.0;
 		location = new Vector<Vertex>(0);
 		edges = new Vector<Edge>(0);
 	}
 
-	/** This constructor creates a list of vertex locations, and edges read
-	   from the plain text file locationFile. The transmission
-	   range of these vertices is set to 1.0. */
+	/**
+	 * This constructor creates a list of vertex locations, and edges read
+	 * from the plain text file locationFile. The transmission
+	 * range of these vertices is set to 1.0.
+	 */
 	VertexNetwork(String locationFile) {
 		this(1.0, locationFile);
 	}
 
-	/** This constructor creates a list of vertex locations, and edges read
-	   from the plain text file locationFile. The transmission
-	   range of these vertices is set to transmissionRange. */
+	/**
+	 * This constructor creates a list of vertex locations, and edges read
+	 * from the plain text file locationFile. The transmission
+	 * range of these vertices is set to transmissionRange.
+	 */
 	VertexNetwork(String locationFile, double transmissionRange) {
 		this(transmissionRange, locationFile);
 	}
 
-	/** This constructor creates a list of vertex locations, and edges read
-	   from the plain text file locationFile. The transmission
-	   range of these vertices is set to transmissionRange. */
+	/**
+	 * This constructor creates a list of vertex locations, and edges read
+	 * from the plain text file locationFile. The transmission
+	 * range of these vertices is set to transmissionRange.
+	 */
 	VertexNetwork(double transmissionRange, String locationFile) {
 		this.transmissionRange = transmissionRange;
 		Scanner scan = null;
@@ -78,9 +86,12 @@ public abstract class VertexNetwork {
 		return edges;
 	}
 
-	/** This method sets the transmission range to transmissionRange.
-		DO NOT FORGET to recompute your graph when you change the
-		transmissionRange to a new value. */
+	/**
+	 * This method sets the transmission range to transmissionRange.
+	 *
+	 * DO NOT FORGET to recompute your graph when you change the
+	 * transmissionRange to a new value.
+	 */
 	public void setTransmissionRange(double transmissionRange) {
 		this.transmissionRange = transmissionRange;
 	}
@@ -91,12 +102,15 @@ public abstract class VertexNetwork {
 
 	public abstract Vector<Vertex> dijkstraPathHops(int sourceIndex, int sinkIndex) ;
 
-	/** This method calls the GPSR algorithm for all pairs of vertices and
-	   displays the number of successful runs as well as the average time
-	   taken for these successful runs. Note that the time measured is
-	   system time and so you should run your code on a lightly loaded
-	   computer to get consistent and meaningful timing results.
-	   DO NOT CHANGE the following code. */
+	/**
+	 * This method calls the GPSR algorithm for all pairs of vertices and
+	 * displays the number of successful runs as well as the average time
+	 * taken for these successful runs. Note that the time measured is
+	 * system time and so you should run your code on a lightly loaded
+	 * computer to get consistent and meaningful timing results.
+	 *
+	 * DO NOT CHANGE the following code.
+	 */
 	public void gpsrAllPairs(boolean print) {
 		int numSuccesses = 0;
 		long totalTimeSuccesses = 0;
@@ -122,12 +136,15 @@ public abstract class VertexNetwork {
 		System.out.println("");
 	}
 
-	/** This method calls Dijkstra's algorithm (for minimum latency) for all pairs
-	   of vertices and displays the number of successful runs as well as the
-	   average time taken for these successful runs. Note that the time measured
-	   is system time and so you should run your code on a lightly loaded
-	   computer to get consistent and meaningful timing results.
-	   DO NOT CHANGE the following code. */
+	/**
+	 * This method calls Dijkstra's algorithm (for minimum latency) for all pairs
+	 * of vertices and displays the number of successful runs as well as the
+	 * average time taken for these successful runs. Note that the time measured
+	 * is system time and so you should run your code on a lightly loaded
+	 * computer to get consistent and meaningful timing results.
+	 *
+	 * DO NOT CHANGE the following code.
+	 */
 	public void dijkstraLatencyAllPairs(boolean print) {
 		int numSuccesses = 0;
 		long totalTimeSuccesses = 0;
@@ -153,12 +170,15 @@ public abstract class VertexNetwork {
 		System.out.println("");
 	}
 
-	/** This method calls Dijkstra's algorithm (for minimum hops) for all pairs
-	   of vertices and displays the number of successful runs as well as the
-	   average time taken for these successful runs. Note that the time measured
-	   is system time and so you should run your code on a lightly loaded
-	   computer to get consistent and meaningful timing results.
-	   DO NOT CHANGE the following code. */
+	/**
+	 * This method calls Dijkstra's algorithm (for minimum hops) for all pairs
+	 * of vertices and displays the number of successful runs as well as the
+	 * average time taken for these successful runs. Note that the time measured
+	 * is system time and so you should run your code on a lightly loaded
+	 * computer to get consistent and meaningful timing results.
+	 *
+	 * DO NOT CHANGE the following code.
+	 */
 	public void dijkstraHopsAllPairs(boolean print) {
 		int numSuccesses = 0;
 		long totalTimeSuccesses = 0;
@@ -183,7 +203,5 @@ public abstract class VertexNetwork {
 		}
 		System.out.println("");
 	}
-
-
 }
 
