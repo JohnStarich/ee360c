@@ -3,7 +3,7 @@
  * EID: <your EID>
  */
 
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Your solution goes in this file.
@@ -49,7 +49,54 @@ public class Program2 extends VertexNetwork {
 	 * implements the GPSR algorithm.
 	 */
 	public Vector<Vertex> gpsrPath(int sourceIndex, int sinkIndex) {
-		return new Vector<>(0);
+		/*
+		while our current index is not the destination; do
+			add current vertex to path
+			look up all adjacent edges excluding edges we came from
+			find distances to sink
+			if all distances are infinity
+			choose vertex with shortest distance to sink
+			set current index to that vertex's index
+		done
+		 */
+		Vector<Vertex> path = new Vector<>();
+		Vertex endVertex = location.get(sinkIndex);
+		int currentIndex = sourceIndex;
+		while(currentIndex != sinkIndex) {
+			Vertex currentVertex = location.get(currentIndex);
+			path.add(currentVertex);
+
+			int smallestDistanceIndex = -1;
+			double smallestDistance = Double.POSITIVE_INFINITY;
+			for (Edge edge : edges) {
+				int startIndex = edge.getU();
+				int endIndex = edge.getV();
+				if(endIndex == currentIndex) {
+					// swap
+					int tmp = startIndex;
+					startIndex = endIndex;
+					endIndex = tmp;
+				}
+				// if this edge starts from the current node and we haven't visited it before
+				if(startIndex == currentIndex && ! path.contains(location.get(endIndex))) {
+					// find smallest distance toward the end, hold onto the index
+					Vertex next = location.get(endIndex);
+					double distanceToNext = currentVertex.distance(next);
+					double distanceFromNextToEnd = endVertex.distance(next);
+					if(distanceToNext <= transmissionRange && distanceFromNextToEnd < smallestDistance) {
+						smallestDistance = distanceFromNextToEnd;
+						smallestDistanceIndex = endIndex;
+					}
+				}
+			}
+
+			// if there is no way to the sink from here, return no path
+			if(smallestDistance == Double.POSITIVE_INFINITY || smallestDistanceIndex == -1) return new Vector<>(0);
+
+			currentIndex = smallestDistanceIndex;
+		}
+		path.add(endVertex);
+		return path;
 	}
 
 	/**
