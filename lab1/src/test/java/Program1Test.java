@@ -20,7 +20,7 @@ public class Program1Test extends TestCase {
 
 		System.out.println(matching);
 
-		assertTrue(program.isStableMatching(matching));
+		assertTrue("Should be stable", program.isStableMatching(matching));
 	}
 
 	public void testStable2() throws Exception {
@@ -36,7 +36,7 @@ public class Program1Test extends TestCase {
 
 		System.out.println(matching);
 
-		assertTrue(program.isStableMatching(matching));
+		assertTrue("Should be stable", program.isStableMatching(matching));
 	}
 
 	public void testUnstable() throws Exception {
@@ -52,7 +52,7 @@ public class Program1Test extends TestCase {
 
 		System.out.println(matching);
 
-		assertFalse(program.isStableMatching(matching));
+		assertFalse("Should not be stable", program.isStableMatching(matching));
 	}
 
 	public void testStableBruteForce() throws Exception {
@@ -62,9 +62,6 @@ public class Program1Test extends TestCase {
 		Matching result = program.stableMatchingBruteForce(matching);
 		System.out.println(result);
 
-		boolean stable = program.isStableMatching(result);
-		System.out.println("Is stable: " + stable);
-
-		assertTrue(stable);
+		assertTrue("Should be stable", program.isStableMatching(result));
 	}
 }
