@@ -105,89 +105,139 @@ public class Program1 extends AbstractProgram1 {
 	 * set. Study the project description to understand the variables which
 	 * represent the input to your solution.
 	 *
+	 * @complexity O(tenants * (tenants + apartments + landlords))
+	 *             but we know apartments >= tenants >= landlords
+	 *             so tighter upper-bound is O(tenants * apartments).
+	 *             If we know apartments == tenants, then O(tenants^2)
+	 * @param match the current matching problems information
 	 * @return A stable Matching.
 	 */
 	public Matching stableMatchingGaleShapley(Matching match) {
-		final int tenantCount = match.getTenantCount();
-		final int landlordCount = match.getLandlordCount();
-		int apartmentCount = 0;
+		final int tenantCount = match.getTenantCount(); // O(1)
+		final int landlordCount = match.getLandlordCount(); // O(1)
+		int apartmentCount = 0; // O(1)
+		// O(landlords)
 		for(int landlord = 0; landlord < landlordCount; landlord++) {
-			apartmentCount += match.getLandlordOwners().get(landlord).size();
+			apartmentCount += match.getLandlordOwners().get(landlord).size(); // O(1)
 		}
-		Map<Integer, Integer> matchings = new HashMap<>(tenantCount);
-		Map<Integer, Set<Integer>> proposalsLeft = new HashMap<>(tenantCount);
+		Map<Integer, Integer> matchings = new HashMap<>(tenantCount); // O(1)
+		Map<Integer, Set<Integer>> proposalsLeft = new HashMap<>(tenantCount); // O(1)
+		// O(tenants)
 		for(int tenant = 0; tenant < tenantCount; tenant++) {
-			Set<Integer> unproposedApartments = new HashSet<>(apartmentCount);
-			for(int apartment = 0; apartment < apartmentCount; apartment++) unproposedApartments.add(apartment);
-			proposalsLeft.put(tenant, unproposedApartments);
+			Set<Integer> unproposedApartments = new HashSet<>(apartmentCount); // O(1)
+			// O(apartments)
+			for(int apartment = 0; apartment < apartmentCount; apartment++) unproposedApartments.add(apartment); // O(1)
+			proposalsLeft.put(tenant, unproposedApartments); // O(1)
 		}
 
 		Integer tenant;
+		// O(tenants * (tenants + landlords + apartments))
 		while ((tenant = freeTenant(matchings, tenantCount)) != null && ! proposalsLeft.get(tenant).isEmpty()) {
+			// O(apartments) and decreases by 1 each iteration per tenant
 			Integer unproposedApartment = firstUnproposedApartment(match.getTenantPref().get(tenant), proposalsLeft.get(tenant));
-			if (! matchings.values().contains(unproposedApartment)) {
-				proposalsLeft.get(tenant).remove(unproposedApartment);
-				matchings.put(tenant, unproposedApartment);
+			if (! matchings.values().contains(unproposedApartment)) { // O(1)
+				matchings.put(tenant, unproposedApartment); // O(1)
 			}
 			else {
+				// O(tenants)
 				Integer currentTenantOfApartment = residentOfApartment(unproposedApartment, matchings);
+				// O(landlords)
 				Integer landlord = landlordForApartment(unproposedApartment, match.getLandlordOwners());
-				Vector<Integer> landlordPrefsOfTenants = match.getLandlordPref().get(landlord);
-				Integer landlordPrefOfCurrentTenant = landlordPrefsOfTenants.get(currentTenantOfApartment);
-				Integer landlordPrefOfNewTenant = landlordPrefsOfTenants.get(tenant);
-				if(landlordPrefOfCurrentTenant < landlordPrefOfNewTenant) {
-					proposalsLeft.get(tenant).remove(unproposedApartment);
+				Vector<Integer> landlordPrefsOfTenants = match.getLandlordPref().get(landlord); // O(1)
+				Integer landlordPrefOfCurrentTenant = landlordPrefsOfTenants.get(currentTenantOfApartment); // O(1)
+				Integer landlordPrefOfNewTenant = landlordPrefsOfTenants.get(tenant); // O(1)
+				if(landlordPrefOfCurrentTenant < landlordPrefOfNewTenant) { // O(1)
+					// remains free, just remove this apartment from their proposalsLeft
 				}
 				else {
-					matchings.remove(currentTenantOfApartment);
-					proposalsLeft.get(tenant).remove(unproposedApartment);
-					matchings.put(tenant, unproposedApartment);
+					matchings.remove(currentTenantOfApartment); // O(1)
+					matchings.put(tenant, unproposedApartment); // O(1)
 				}
 			}
+			proposalsLeft.get(tenant).remove(unproposedApartment); // O(1)
 		}
-		match.setTenantMatching(convertMatchings(matchings));
+		match.setTenantMatching(convertMatchings(matchings)); // O(1)
 		return match;
 	}
 
+	/**
+	 * Finds the current tenant matched to the provided apartment
+	 * @complexity O(matchings)
+	 * @param apartment the provided apartment
+	 * @param matchings the current matchings of tenants to their apartments
+	 * @return the current tenant matched to the provided apartment
+	 */
 	private Integer residentOfApartment(Integer apartment, Map<Integer, Integer> matchings) {
+		// O(matchings)
 		for(Map.Entry<Integer, Integer> matching : matchings.entrySet()) {
-			if(apartment.equals(matching.getValue())) return matching.getKey();
+			if(apartment.equals(matching.getValue())) return matching.getKey(); // O(1)
 		}
 		return null;
 	}
 
+	/**
+	 * Finds the landlord for the provided apartment
+	 * @complexity O(landlords)
+	 * @param apartment the apartment to find a landlord for
+	 * @param landlordOwnership the list of landlords and the apartments they own
+	 * @return the landlord that owns the provided apartment
+	 */
 	private Integer landlordForApartment(Integer apartment, Vector<Vector<Integer>> landlordOwnership) {
+		// O(landlordOwnership)
 		for(int landlord = 0; landlord < landlordOwnership.size(); landlord++) {
-			if(landlordOwnership.get(landlord).contains(apartment)) return landlord;
+			if(landlordOwnership.get(landlord).contains(apartment)) return landlord; // O(1)
 		}
 		return null;
 	}
 
+	/**
+	 * Finds the best apartment in the given preference list that has not been proposed to.
+	 * Assumes that there is still an apartment not yet proposed to.
+	 * @complexity O(proposalsLeft)
+	 * @param preferences the tenant's preference list
+	 * @param proposalsLeft the proposals the tenant has not yet made
+	 * @return the first apartment that the tenant hasn't proposed to but prefers the most
+	 */
 	private Integer firstUnproposedApartment(Vector<Integer> preferences, Set<Integer> proposalsLeft) {
-		Integer lowestPref = Integer.MAX_VALUE;
+		Integer lowestPref = Integer.MAX_VALUE; // O(1)
 		Integer lowestPrefApartment = -1; // = highest priority apartment
+		// O(|proposalsLeft|)
 		for(Integer apartment : proposalsLeft) {
-			if (preferences.get(apartment) < lowestPref) {
-				lowestPref = preferences.get(apartment);
-				lowestPrefApartment = apartment;
+			if (preferences.get(apartment) < lowestPref) { // O(1)
+				lowestPref = preferences.get(apartment); // O(1)
+				lowestPrefApartment = apartment; // O(1)
 			}
 		}
-
 		return lowestPrefApartment;
 	}
 
+	/**
+	 * Converts the map of matchings into the expected Vector of integers
+	 * @complexity O(matchings)
+	 * @param matchings the map of matchings
+	 * @return the expected Vector of integers, where index = tenant and value = apartment
+	 */
 	public Vector<Integer> convertMatchings(Map<Integer, Integer> matchings) {
-		Vector<Integer> newMatchings = new Vector<>(matchings.size());
-		newMatchings.addAll(matchings.values());
+		Vector<Integer> newMatchings = new Vector<>(matchings.size()); // O(1)
+		newMatchings.addAll(matchings.values()); // O(|matchings|)
+		// O(|matchings|)
 		for(Map.Entry<Integer, Integer> entry : matchings.entrySet()) {
-			newMatchings.set(entry.getKey(), entry.getValue());
+			newMatchings.set(entry.getKey(), entry.getValue()); // O(1)
 		}
 		return newMatchings;
 	}
 
+	/**
+	 * Find the first tenant that isn't matched to an apartment.
+	 * @complexity O(totalTenants)
+	 * @param matchings The current pairs of tenants to their apartments
+	 * @param totalTenants The total number of tenants such that tenants = range(0, totalTenants)
+	 * @return The number of a tenant that is not matched, null if all tenants are matched
+	 */
 	public Integer freeTenant(Map<Integer, Integer> matchings, int totalTenants) {
-		for(int i = 0; i < totalTenants; i++) {
-			if(! matchings.containsKey(i)) return i;
+		// O(totalTenants)
+		for(int tenant = 0; tenant < totalTenants; tenant++) {
+			if(! matchings.containsKey(tenant)) return tenant; // O(1) due to hashCodes in HashMaps
 		}
 		return null;
 	}
