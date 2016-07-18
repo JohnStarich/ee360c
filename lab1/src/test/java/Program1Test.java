@@ -18,7 +18,7 @@ public class Program1Test extends TestCase {
 		newMatches.add(3);
 		matching = new Matching(matching, newMatches);
 
-		System.out.println(matching);
+//		System.out.println(matching);
 
 		assertTrue("Should be stable", program.isStableMatching(matching));
 	}
@@ -62,7 +62,7 @@ public class Program1Test extends TestCase {
 		Matching result = program.stableMatchingBruteForce(matching);
 		long end = System.nanoTime();
 		System.out.printf("\n%s:\n%s\n\n", fileName, result.toString());
-		System.out.printf("BF - Run time of %20s: %8.4f seconds\n", fileName, (end - start) / 1.0e9);
+		System.out.printf("BF - Run time of %20s: %10.8f seconds\n", fileName, (end - start) / 1.0e9);
 		return program.isStableMatching(result);
 	}
 
@@ -73,7 +73,7 @@ public class Program1Test extends TestCase {
 		Matching result = program.stableMatchingGaleShapley(matching);
 		long end = System.nanoTime();
 		System.out.printf("\n%s:\n%s\n\n", fileName, result.toString());
-		System.out.printf("GS - Run time of %20s: %8.4f seconds\n", fileName, (end - start) / 1.0e9);
+		System.out.printf("GS - Run time of %20s: %10.8f seconds\n", fileName, (end - start) / 1.0e9);
 		return program.isStableMatching(result);
 	}
 
