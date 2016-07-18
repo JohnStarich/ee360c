@@ -3,9 +3,7 @@
  * EID: js68634
  */
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Your solution goes in this class.
@@ -70,15 +68,7 @@ public class Program1 extends AbstractProgram1 {
 		return true;
 	}
 
-	/**
-	 * Determines a solution to the Stable Matching problem from the given input
-	 * set. Study the project description to understand the variables which
-	 * represent the input to your solution.
-	 *
-	 * @return A stable Matching.
-	 */
-	public Matching stableMatchingGaleShapley(Matching match) {
-		/*
+	/*
 		while(a tenant is free and that tenant has not proposed to all apartment options) { // "apartment options" or "landlords"?
 			for(preferredApartment : tenantPrefs) {
 				if(preferredApartment is available) {
@@ -93,27 +83,113 @@ public class Program1 extends AbstractProgram1 {
 			}
 		}
 		return new Matching(match, matches);
-		*/
-		final int t = match.getTenantCount();
+	 */
 
-		Vector<Integer> matches = new Vector<>();
-		Vector<Set<Integer>> matchProposals = new Vector<>(t);
-		for(int i = 0; i < t; i++) {
-			matches.add(null);
-			matchProposals.add(new HashSet<Integer>());
+	/*
+	initially all men and women are free
+	while there is some man who is free and hasn't proposed to all women:
+		m = choose that free man
+		w = choose first woman in man's pref list that has not been proposed to yet
+		if w is free:
+			m and w become matched
+		else:
+			m2 = man w is matched with already
+			if w prefers m2 to m:
+				m remains free
+			else:
+				m and w become matched
+				m2 becomes free
+	return matches
+	 */
+
+	/**
+	 * Determines a solution to the Stable Matching problem from the given input
+	 * set. Study the project description to understand the variables which
+	 * represent the input to your solution.
+	 *
+	 * @return A stable Matching.
+	 */
+	public Matching stableMatchingGaleShapley(Matching match) {
+		final int tenantCount = match.getTenantCount();
+		final int landlordCount = match.getLandlordCount();
+		int apartmentCount = 0;
+		for(int landlord = 0; landlord < landlordCount; landlord++) {
+			apartmentCount += match.getLandlordOwners().get(landlord).size();
+		}
+		Map<Integer, Integer> matchings = new HashMap<>(tenantCount);
+		Map<Integer, Set<Integer>> proposalsLeft = new HashMap<>(tenantCount);
+		for(int tenant = 0; tenant < tenantCount; tenant++) {
+			Set<Integer> unproposedApartments = new HashSet<>(apartmentCount);
+			for(int apartment = 0; apartment < apartmentCount; apartment++) unproposedApartments.add(apartment);
+			proposalsLeft.put(tenant, unproposedApartments);
 		}
 
-		int freeTenants = t;
-		int proposedToAll = 0;
-		while(freeTenants != 0 && proposedToAll != t) {
-			int freeTenant;
-			for(freeTenant = 0; freeTenant < matches.size(); freeTenant++) {
-				if(matches.get(freeTenant) == null) break;
+		Integer tenant;
+		while ((tenant = freeTenant(matchings, tenantCount)) != null && ! proposalsLeft.get(tenant).isEmpty()) {
+			Integer unproposedApartment = firstUnproposedApartment(match.getTenantPref().get(tenant), proposalsLeft.get(tenant));
+			if (! matchings.values().contains(unproposedApartment)) {
+				proposalsLeft.get(tenant).remove(unproposedApartment);
+				matchings.put(tenant, unproposedApartment);
 			}
-
-			Vector<Integer> freeTenantPrefs = match.getTenantPref().get(freeTenant);
-//			for()
+			else {
+				Integer currentTenantOfApartment = residentOfApartment(unproposedApartment, matchings);
+				Integer landlord = landlordForApartment(unproposedApartment, match.getLandlordOwners());
+				Vector<Integer> landlordPrefsOfTenants = match.getLandlordPref().get(landlord);
+				Integer landlordPrefOfCurrentTenant = landlordPrefsOfTenants.get(currentTenantOfApartment);
+				Integer landlordPrefOfNewTenant = landlordPrefsOfTenants.get(tenant);
+				if(landlordPrefOfCurrentTenant < landlordPrefOfNewTenant) {
+					proposalsLeft.get(tenant).remove(unproposedApartment);
+				}
+				else {
+					matchings.remove(currentTenantOfApartment);
+					proposalsLeft.get(tenant).remove(unproposedApartment);
+					matchings.put(tenant, unproposedApartment);
+				}
+			}
 		}
-		return null; /** TODO Remove this statement! */
+		return new Matching(match, convertMatchings(matchings));
+	}
+
+	private Integer residentOfApartment(Integer apartment, Map<Integer, Integer> matchings) {
+		for(Map.Entry<Integer, Integer> matching : matchings.entrySet()) {
+			if(apartment.equals(matching.getValue())) return matching.getKey();
+		}
+		return null;
+	}
+
+	private Integer landlordForApartment(Integer apartment, Vector<Vector<Integer>> landlordOwnership) {
+		for(int landlord = 0; landlord < landlordOwnership.size(); landlord++) {
+			if(landlordOwnership.get(landlord).contains(apartment)) return landlord;
+		}
+		return null;
+	}
+
+	private Integer firstUnproposedApartment(Vector<Integer> preferences, Set<Integer> proposalsLeft) {
+		Integer lowestPref = Integer.MAX_VALUE;
+		Integer lowestPrefApartment = -1; // = highest priority apartment
+		for(Integer apartment : proposalsLeft) {
+			if (preferences.get(apartment) < lowestPref) {
+				lowestPref = preferences.get(apartment);
+				lowestPrefApartment = apartment;
+			}
+		}
+
+		return lowestPrefApartment;
+	}
+
+	public Vector<Integer> convertMatchings(Map<Integer, Integer> matchings) {
+		Vector<Integer> newMatchings = new Vector<>(matchings.size());
+		newMatchings.addAll(matchings.values());
+		for(Map.Entry<Integer, Integer> entry : matchings.entrySet()) {
+			newMatchings.set(entry.getKey(), entry.getValue());
+		}
+		return newMatchings;
+	}
+
+	public Integer freeTenant(Map<Integer, Integer> matchings, int totalTenants) {
+		for(int i = 0; i < totalTenants; i++) {
+			if(! matchings.containsKey(i)) return i;
+		}
+		return null;
 	}
 }
