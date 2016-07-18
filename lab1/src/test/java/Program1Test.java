@@ -55,39 +55,43 @@ public class Program1Test extends TestCase {
 		assertFalse("Should not be stable", program.isStableMatching(matching));
 	}
 
-	public void testStableBruteForce() throws Exception {
+	public boolean checkBruteStability(String fileName) throws Exception {
 		Program1 program = new Program1();
-		Matching matching, result;
+		Matching matching = Driver.parseMatchingProblem(fileName);
+		long start = System.nanoTime();
+		Matching result = program.stableMatchingBruteForce(matching);
+		long end = System.nanoTime();
+		System.out.printf("\n%s:\n%s\n\n", fileName, result.toString());
+		System.out.printf("BF - Run time of %20s: %8.4f seconds\n", fileName, (end - start) / 1.0e9);
+		return program.isStableMatching(result);
+	}
 
+	public boolean checkGSStability(String fileName) throws Exception {
+		Program1 program = new Program1();
+		Matching matching = Driver.parseMatchingProblem(fileName);
+		long start = System.nanoTime();
+		Matching result = program.stableMatchingGaleShapley(matching);
+		long end = System.nanoTime();
+		System.out.printf("\n%s:\n%s\n\n", fileName, result.toString());
+		System.out.printf("GS - Run time of %20s: %8.4f seconds\n", fileName, (end - start) / 1.0e9);
+		return program.isStableMatching(result);
+	}
+
+	public void testStableBruteForce() throws Exception {
 		for(int i = 4; i <= 10; i++) {
-			matching = Driver.parseMatchingProblem("small_inputs/" + i + ".in");
-			result = program.stableMatchingBruteForce(matching);
-			System.out.println(i + ".in\n" + result + "\n\n");
-			assertTrue("Should be stable", program.isStableMatching(result));
+			assertTrue("Should be stable", checkBruteStability("small_inputs/" + i + ".in"));
 		}
 	}
 
 	public void testStableGaleShapley() throws Exception {
-		Program1 program = new Program1();
-		Matching matching, result;
-
 		for(int i = 4; i <= 10; i++) {
-			matching = Driver.parseMatchingProblem("small_inputs/" + i + ".in");
-			result = program.stableMatchingGaleShapley(matching);
-			System.out.println(i + ".in\n" + result + "\n\n");
-			assertTrue("Should be stable", program.isStableMatching(result));
+			assertTrue("Should be stable", checkGSStability("small_inputs/" + i + ".in"));
 		}
 	}
 
 	public void testStableGaleShapleyLargeInput() throws Exception {
-		Program1 program = new Program1();
-		Matching matching, result;
-
 		for(int i = 320; i <= 1280; i *= 2) {
-			matching = Driver.parseMatchingProblem("large_inputs/" + i + ".in");
-			result = program.stableMatchingGaleShapley(matching);
-			System.out.println(i + ".in\n" + result + "\n\n");
-			assertTrue("Should be stable", program.isStableMatching(result));
+			assertTrue("Should be stable", checkGSStability("large_inputs/" + i + ".in"));
 		}
 	}
 }
