@@ -22,43 +22,52 @@ public class Program1 extends AbstractProgram1 {
 	 * Determines whether a candidate Matching represents a solution to the
 	 * Stable Matching problem. Study the description of a Matching in the
 	 * project documentation to help you with this.
+	 *
+	 * @complexity O (tenants * apartments * (tenants + landlords))
+	 *             Given that landlords <= tenants, tighter bound = O(tenants^2 * apartments)
+	 *             Going further, if we assume that tenants == apartments, tigher bound = O(tenants^3)
 	 */
 	public boolean isStableMatching(Matching match) {
 		// stable matching = both tenant and landlord don't prefer each other from different matchings
 
 		// for every tenant, make sure there isn't an unstable match
+		// O(tenants)
 		for(int tenant = 0; tenant < match.getTenantCount(); tenant++) {
-			int apartment = match.getTenantMatching().get(tenant);                  // current matched apartment
-			int apartmentPref = match.getTenantPref().get(tenant).get(apartment);   // current tenant's thoughts on this apartment
+			int apartment = match.getTenantMatching().get(tenant); // O(1) current matched apartment
+			int apartmentPref = match.getTenantPref().get(tenant).get(apartment); // O(1) current tenant's thoughts on this apartment
 
 			// build a collection of apartments that the tenant prefers to the current apartment
-			Vector<Integer> apartmentsTenantPrefersToCurrent = new Vector<>();
-			Vector<Integer> tenantPreferences = match.getTenantPref().get(tenant);
+			Vector<Integer> apartmentsTenantPrefersToCurrent = new Vector<>(); // O(1)
+			Vector<Integer> tenantPreferences = match.getTenantPref().get(tenant); // O(1)
+			// O(apartments)
 			for(int apartmentIndex = 0; apartmentIndex < tenantPreferences.size(); apartmentIndex++) {
-				if(apartmentIndex != apartment && tenantPreferences.get(apartmentIndex) < apartmentPref) {         // higher preference (lower #)
-					apartmentsTenantPrefersToCurrent.add(apartmentIndex);
+				if(apartmentIndex != apartment && tenantPreferences.get(apartmentIndex) < apartmentPref) { // O(1) higher preference (lower #)
+					apartmentsTenantPrefersToCurrent.add(apartmentIndex); // O(1)
 				}
 			}
 
 			// search through these preferred apartments for a landlord that also prefers the current tenant
+			// O(apartments)
 			for(int preferredApartment : apartmentsTenantPrefersToCurrent) {
 				int landlord;
 				// find the landlord for this preferred apartment
+				// O(landlords)
 				for(landlord = 0; landlord < match.getLandlordCount(); landlord++) {
-					if(match.getLandlordOwners().get(landlord).contains(preferredApartment)) {
+					if(match.getLandlordOwners().get(landlord).contains(preferredApartment)) { // O(1)
 						break;
 					}
 				}
 
 				// find out if this tenant would prefer this tenant over the currently matched tenant
-				Vector<Integer> landlordPrefs = match.getLandlordPref().get(landlord);
-				int landlordPreferenceForTenant = landlordPrefs.get(tenant);
+				Vector<Integer> landlordPrefs = match.getLandlordPref().get(landlord); // O(1)
+				int landlordPreferenceForTenant = landlordPrefs.get(tenant); // O(1)
 				int currentTenant;
+				// O(tenants)
 				for(currentTenant = 0; currentTenant < match.getTenantMatching().size(); currentTenant++) {
-					if(match.getTenantMatching().get(currentTenant) == preferredApartment) break;
+					if(match.getTenantMatching().get(currentTenant) == preferredApartment) break; // O(1)
 				}
-				int landlordPreference = landlordPrefs.get(currentTenant);
-				if (landlordPreferenceForTenant < landlordPreference) {
+				int landlordPreference = landlordPrefs.get(currentTenant); // O(1)
+				if (landlordPreferenceForTenant < landlordPreference) { // O(1)
 					return false;
 				}
 			}
@@ -105,7 +114,7 @@ public class Program1 extends AbstractProgram1 {
 	 * set. Study the project description to understand the variables which
 	 * represent the input to your solution.
 	 *
-	 * @complexity O(tenants * (tenants + apartments + landlords))
+	 * @complexity O (tenants * (tenants + apartments + landlords))
 	 *             but we know apartments >= tenants >= landlords
 	 *             so tighter upper-bound is O(tenants * apartments).
 	 *             If we know apartments == tenants, then O(tenants^2)
