@@ -39,7 +39,6 @@ public class Program1 extends AbstractProgram1 {
 					apartmentsTenantPrefersToCurrent.add(apartmentIndex);
 				}
 			}
-			//System.out.println("Tenant "+tenant+": current="+apartment+", preferred="+apartmentsTenantPrefersToCurrent);
 
 			// search through these preferred apartments for a landlord that also prefers the current tenant
 			for(int preferredApartment : apartmentsTenantPrefersToCurrent) {
@@ -50,7 +49,6 @@ public class Program1 extends AbstractProgram1 {
 						break;
 					}
 				}
-				//System.out.println("Tenant "+tenant+": preferredApartment="+preferredApartment+" -> landlord="+landlord);
 
 				// find out if this tenant would prefer this tenant over the currently matched tenant
 				Vector<Integer> landlordPrefs = match.getLandlordPref().get(landlord);
@@ -147,7 +145,8 @@ public class Program1 extends AbstractProgram1 {
 				}
 			}
 		}
-		return new Matching(match, convertMatchings(matchings));
+		match.setTenantMatching(convertMatchings(matchings));
+		return match;
 	}
 
 	private Integer residentOfApartment(Integer apartment, Map<Integer, Integer> matchings) {
