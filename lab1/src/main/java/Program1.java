@@ -155,13 +155,11 @@ public class Program1 extends AbstractProgram1 {
 				Vector<Integer> landlordPrefsOfTenants = match.getLandlordPref().get(landlord); // O(1)
 				Integer landlordPrefOfCurrentTenant = landlordPrefsOfTenants.get(currentTenantOfApartment); // O(1)
 				Integer landlordPrefOfNewTenant = landlordPrefsOfTenants.get(tenant); // O(1)
-				if(landlordPrefOfCurrentTenant < landlordPrefOfNewTenant) { // O(1)
-					// remains free, just remove this apartment from their proposalsLeft
-				}
-				else {
+				if (landlordPrefOfCurrentTenant >= landlordPrefOfNewTenant) { // O(1)
 					matchings.remove(currentTenantOfApartment); // O(1)
 					matchings.put(tenant, unproposedApartment); // O(1)
 				}
+				// else remains free, just remove this apartment from their proposalsLeft
 			}
 			proposalsLeft.get(tenant).remove(unproposedApartment); // O(1)
 		}
