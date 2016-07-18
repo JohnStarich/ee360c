@@ -117,7 +117,7 @@ public class Program1 extends AbstractProgram1 {
 	 * @complexity O (tenants * (tenants + apartments + landlords))
 	 *             but we know apartments >= tenants >= landlords
 	 *             so tighter upper-bound is O(tenants * apartments).
-	 *             If we know apartments == tenants, then O(tenants^2)
+	 *             If we assume apartments == tenants, then O(tenants^2)
 	 * @param match the current matching problems information
 	 * @return A stable Matching.
 	 */
