@@ -55,9 +55,11 @@ public class Program2 extends VertexNetwork {
 			look up all adjacent edges excluding edges we came from
 			find distances to sink
 			if all distances are infinity
+				then return empty path
 			choose vertex with shortest distance to sink
 			set current index to that vertex's index
 		done
+		return path
 		 */
 		Vector<Vertex> path = new Vector<>();
 		Vertex endVertex = location.get(sinkIndex);
@@ -67,7 +69,7 @@ public class Program2 extends VertexNetwork {
 			path.add(currentVertex);
 
 			int smallestDistanceIndex = -1;
-			double smallestDistance = Double.POSITIVE_INFINITY;
+			double smallestDistance = currentVertex.distance(endVertex);
 			for (Edge edge : edges) {
 				int startIndex = edge.getU();
 				int endIndex = edge.getV();
@@ -91,7 +93,7 @@ public class Program2 extends VertexNetwork {
 			}
 
 			// if there is no way to the sink from here, return no path
-			if(smallestDistance == Double.POSITIVE_INFINITY || smallestDistanceIndex == -1) return new Vector<>(0);
+			if(smallestDistanceIndex == -1) return new Vector<>(0);
 
 			currentIndex = smallestDistanceIndex;
 		}

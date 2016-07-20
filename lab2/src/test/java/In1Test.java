@@ -22,10 +22,10 @@ public class In1Test extends TestCase {
 		for(String line = reader.readLine(); line != null; line = reader.readLine()) {
 			Matcher m = linePattern.matcher(line);
 			if(m.matches()) {
-				Integer start = Integer.parseInt(m.group("start")) - 1;
+				Integer start = Integer.parseInt(m.group("start"));
 				String[] ends = m.group("end").split(",");
 				Vector<Integer> intEnds = new Vector<>(ends.length);
-				for (String end : ends) { intEnds.add(Integer.parseInt(end) - 1); }
+				for (String end : ends) { intEnds.add(Integer.parseInt(end)); }
 				solution.put(start, intEnds);
 			}
 		}
