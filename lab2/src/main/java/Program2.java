@@ -101,6 +101,28 @@ public class Program2 extends VertexNetwork {
 		return path;
 	}
 
+	public PriorityQueue<DijkstraNode> dijkstraInitializeSingleSource(Vertex startVertex) {
+		PriorityQueue<DijkstraNode> pathLatencies = new PriorityQueue<>(location.size());
+		for(int vertexIndex = 0; vertexIndex < location.size(); vertexIndex++) {
+			pathLatencies.add(new DijkstraNode(vertexIndex));
+		}
+		pathLatencies.peek().cost = 0D;
+		return pathLatencies;
+	}
+
+	public Vector<Edge> dijkstraAdjacentVertices(int vertex) {
+		Vector<Edge> adjacentEdges = new Vector<>();
+		for(Edge edge : edges) {
+			if(vertex == edge.getV()) {
+				adjacentEdges.add(new Edge(edge.getV(), edge.getU(), edge.getW()));
+			}
+			if(vertex == edge.getU()) {
+				adjacentEdges.add(edge);
+			}
+		}
+		return adjacentEdges;
+	}
+
 	/**
 	 * This method returns a path (shortest in terms of latency) from a source at
 	 * location sourceIndex and a sink at location sinkIndex using Dijkstra's algorithm.
@@ -111,7 +133,58 @@ public class Program2 extends VertexNetwork {
 	 * implements Dijkstra's algorithm.
 	 */
 	public Vector<Vertex> dijkstraPathLatency(int sourceIndex, int sinkIndex) {
-		return new Vector<>(0);
+		/*
+		DIJKSTRA(G, w, s):
+			INITIALIZE-SINGLE-SOURCE(G, s)
+			S = []
+			Q = G.V
+			while Q != []:
+				u = EXTRACT-MIN(Q)
+				S = S + {u}
+				for each vertex in Adj[u]:
+					RELAX(u, v, w)
+		 */
+		Vector<Vertex> path = new Vector<>();
+		// initialize single source
+		Vector<DijkstraNode> nodes = new Vector<>(location.size());
+		PriorityQueue<DijkstraNode> pathLatencies = new PriorityQueue<>(location.size());
+		for(int vertexIndex = 0; vertexIndex < location.size(); vertexIndex++) {
+			DijkstraNode node = new DijkstraNode(vertexIndex);
+			nodes.add(node);
+			pathLatencies.add(node);
+		}
+		nodes.get(sourceIndex).cost = 0D;
+		Vertex sinkVertex = location.get(sinkIndex);
+
+		while (! pathLatencies.isEmpty()) {
+			DijkstraNode currentNode = pathLatencies.poll();
+			if(currentNode.nodeIndex == sinkIndex) break;
+			Vertex currentVertex = location.get(currentNode.nodeIndex);
+			if(sinkVertex.distance(currentVertex) == Double.POSITIVE_INFINITY) break;
+			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
+				Vertex adjacentVertex = location.get(edge.getV());
+				if(path.contains(adjacentVertex)) continue;
+				double cost = edge.getW();
+				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
+				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
+					pathLatencies.remove(adjacentDijkstraNode);
+					adjacentDijkstraNode.cost = currentNode.cost + cost;
+					adjacentDijkstraNode.predecessor = currentNode;
+					pathLatencies.add(adjacentDijkstraNode);
+				}
+			}
+		}
+		Stack<DijkstraNode> reversedPath = new Stack<>();
+		DijkstraNode currentNode = nodes.get(sinkIndex);
+		reversedPath.add(currentNode);
+		while(currentNode.predecessor != null) {
+			reversedPath.add(currentNode.predecessor);
+			currentNode = currentNode.predecessor;
+		}
+		while(! reversedPath.isEmpty()) {
+			path.add(location.get(reversedPath.pop().nodeIndex));
+		}
+		return path;
 	}
 
 	/**
@@ -124,7 +197,47 @@ public class Program2 extends VertexNetwork {
 	 * implements Dijkstra's algorithm.
 	 */
 	public Vector<Vertex> dijkstraPathHops(int sourceIndex, int sinkIndex) {
-		return new Vector<>(0);
+		Vector<Vertex> path = new Vector<>();
+		// initialize single source
+		Vector<DijkstraNode> nodes = new Vector<>(location.size());
+		PriorityQueue<DijkstraNode> pathLatencies = new PriorityQueue<>(location.size());
+		for(int vertexIndex = 0; vertexIndex < location.size(); vertexIndex++) {
+			DijkstraNode node = new DijkstraNode(vertexIndex);
+			nodes.add(node);
+			pathLatencies.add(node);
+		}
+		nodes.get(sourceIndex).cost = 0D;
+		Vertex sinkVertex = location.get(sinkIndex);
+
+		while (! pathLatencies.isEmpty()) {
+			DijkstraNode currentNode = pathLatencies.poll();
+			if(currentNode.nodeIndex == sinkIndex) break;
+			Vertex currentVertex = location.get(currentNode.nodeIndex);
+			if(sinkVertex.distance(currentVertex) == Double.POSITIVE_INFINITY) break;
+			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
+				Vertex adjacentVertex = location.get(edge.getV());
+				if(path.contains(adjacentVertex)) continue;
+				double cost = 1;
+				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
+				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
+					pathLatencies.remove(adjacentDijkstraNode);
+					adjacentDijkstraNode.cost = currentNode.cost + cost;
+					adjacentDijkstraNode.predecessor = currentNode;
+					pathLatencies.add(adjacentDijkstraNode);
+				}
+			}
+		}
+		Stack<DijkstraNode> reversedPath = new Stack<>();
+		DijkstraNode currentNode = nodes.get(sinkIndex);
+		reversedPath.add(currentNode);
+		while(currentNode.predecessor != null) {
+			reversedPath.add(currentNode.predecessor);
+			currentNode = currentNode.predecessor;
+		}
+		while(! reversedPath.isEmpty()) {
+			path.add(location.get(reversedPath.pop().nodeIndex));
+		}
+		return path;
 	}
 }
 
