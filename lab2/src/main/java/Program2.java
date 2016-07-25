@@ -163,7 +163,6 @@ public class Program2 extends VertexNetwork {
 			if(sinkVertex.distance(currentVertex) == Double.POSITIVE_INFINITY) break;
 			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
-				if(path.contains(adjacentVertex)) continue;
 				double cost = edge.getW();
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
 				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
@@ -216,7 +215,6 @@ public class Program2 extends VertexNetwork {
 			if(sinkVertex.distance(currentVertex) == Double.POSITIVE_INFINITY) break;
 			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
-				if(path.contains(adjacentVertex)) continue;
 				double cost = 1;
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
 				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
@@ -237,6 +235,7 @@ public class Program2 extends VertexNetwork {
 		while(! reversedPath.isEmpty()) {
 			path.add(location.get(reversedPath.pop().nodeIndex));
 		}
+		System.out.println(path);
 		return path;
 	}
 }

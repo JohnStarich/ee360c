@@ -189,7 +189,7 @@ public class Program2Test extends TestCase {
 			for (int start = 0; start < location.size(); start++) {
 				for (int end = 0; end < location.size(); end++) {
 					long startTime = System.nanoTime();
-					Vector<Vertex> path = program.dijkstraPathLatency(start, end);
+					Vector<Vertex> path = program.dijkstraPathHops(start, end);
 					long endTime = System.nanoTime();
 					if (! path.isEmpty()) {
 						numSuccesses++;
