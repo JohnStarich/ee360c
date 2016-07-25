@@ -235,7 +235,6 @@ public class Program2 extends VertexNetwork {
 		while(! reversedPath.isEmpty()) {
 			path.add(location.get(reversedPath.pop().nodeIndex));
 		}
-		System.out.println(path);
 		return path;
 	}
 }
