@@ -1,5 +1,7 @@
-
-
+/**
+ * Program 3: Dynamic Programming
+ * @author johnstarich
+ */
 public class Program3 implements IProgram3 {
 	private int numClasses;
 	private int maxGrade;
@@ -10,6 +12,12 @@ public class Program3 implements IProgram3 {
 		this.maxGrade = 0;
 		this.gf = null;
 	}
+
+	public int getNumClasses() { return numClasses; }
+
+	public int getMaxGrade() { return maxGrade; }
+
+	public GradeFunction getGradeFunction() { return gf; }
 
 	public void initialize(int n, int g, GradeFunction gf) {
 		this.numClasses = n;

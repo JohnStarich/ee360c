@@ -4,9 +4,9 @@ public class SquareRootGradeFunction implements GradeFunction{
 	private int numClasses;
 	private int maxGrade;
 
-	public SquareRootGradeFunction(int n, int g) {
-		this.numClasses = n;
-		this.maxGrade = g;
+	public SquareRootGradeFunction(int numClasses, int maxGrade) {
+		this.numClasses = numClasses;
+		this.maxGrade = maxGrade;
 	}
 
 	/*
