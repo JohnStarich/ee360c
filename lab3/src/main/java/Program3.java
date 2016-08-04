@@ -5,25 +5,25 @@
 public class Program3 implements IProgram3 {
 	private int numClasses;
 	private int maxGrade;
-	GradeFunction gf;
+	private GradeFunction gradeFunction;
 
 	public Program3() {
 		this.numClasses = 0;
 		this.maxGrade = 0;
-		this.gf = null;
+		this.gradeFunction = null;
+	}
+
+	public void initialize(int numClasses, int maxGrade, GradeFunction gradeFunction) {
+		this.numClasses = numClasses;
+		this.maxGrade = maxGrade;
+		this.gradeFunction = gradeFunction;
 	}
 
 	public int getNumClasses() { return numClasses; }
 
 	public int getMaxGrade() { return maxGrade; }
 
-	public GradeFunction getGradeFunction() { return gf; }
-
-	public void initialize(int n, int g, GradeFunction gf) {
-		this.numClasses = n;
-		this.maxGrade = g;
-		this.gf = gf;
-	}
+	public GradeFunction getGradeFunction() { return gradeFunction; }
 
 	public int[] computeHours(int totalHours) {
 		int[] computeHours = new int[numClasses];

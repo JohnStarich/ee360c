@@ -1,12 +1,12 @@
 
 
-public interface IProgram3{
+public interface IProgram3 {
 	/*
 	 * This method is used in lieu of a required constructor signature to initialize
 	 * your Program3. After calling a default (no-parameter) constructor, we
 	 * will use this method to initialize your Program3.
 	 */
-	public void initialize(int numClasses, int maxGrade, GradeFunction gf);
+	public void initialize(int numClasses, int maxGrade, GradeFunction gradeFunction);
 
 	/*
 	 * This method returns an array that is the size of the number of classes.
