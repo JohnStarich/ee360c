@@ -21,17 +21,27 @@ public class Program3Test extends TestCase {
 		assertSame(gradeFunction, program.getGradeFunction());
 	}
 
-	public void testComputeHours() throws Exception {
+	public void testComputeHoursSquareRoot() throws Exception {
 		Program3 program = new Program3();
-		program.initialize(10, 3, new SquareRootGradeFunction(10, 3));
+		int n = 10;
+		int H = 40;
+		program.initialize(n, 3, new SquareRootGradeFunction(n, 3));
 
-		assertEquals(40, sum(program.computeHours(40)));
+		assertEquals(H, sum(program.computeHours(H)));
 	}
 
-	public void testComputeGrades() throws Exception {
+	public void testComputeGradesSquareRoot() throws Exception {
 		Program3 program = new Program3();
-		program.initialize(10, 3, new SquareRootGradeFunction(10, 3));
+		int n = 10;
+		int H = 40;
+		program.initialize(n, 3, new SquareRootGradeFunction(n, 3));
+		assertEquals(22, sum(program.computeGrades(H)));
+	}
 
-		assertEquals(22, sum(program.computeGrades(40)));
+	public void testComputeGradesCustom() {
+		Program3 program = new Program3();
+		program.initialize(10, 20, new CustomGradeFunction(10, 20));
+
+		assertEquals(35, sum(program.computeGrades(20)));
 	}
 }
