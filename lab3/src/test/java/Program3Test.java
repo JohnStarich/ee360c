@@ -50,6 +50,16 @@ public class Program3Test extends TestCase {
 		assertEquals(35, sum(program.computeGrades(H)));
 	}
 
+	public void testMyGradeFunction() throws Exception {
+		Program3 program = new Program3();
+		int n = 10;
+		int H = 40;
+		int maxGrade = 10;
+		program.initialize(n, maxGrade, new MyGradeFunction(n, maxGrade));
+		assertEquals(H, sum(program.computeHours(H)));
+		assertEquals(49, sum(program.computeGrades(H)));
+	}
+
 	public void testSuccessiveRunsOnProgram() throws Exception {
 		Program3 program = new Program3();
 		int n = 10;
