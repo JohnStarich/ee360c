@@ -75,4 +75,50 @@ public class Program3Test extends TestCase {
 		H = 80;
 		assertEquals(31, sum(program.computeGrades(H)));
 	}
+
+	public void testAllZeros() throws Exception {
+		Program3 program = new Program3();
+		int n = 10;
+		int H = 40;
+		int maxGrade = 10;
+		program.initialize(n, maxGrade, new GradeFunction() {
+			@Override
+			public int grade(int classID, int hours) {
+				return 0;
+			}
+		});
+		assertEquals(0, sum(program.computeHours(H)));
+		assertEquals(0, sum(program.computeGrades(H)));
+	}
+
+	public void testIncreaseOnClassId() throws Exception {
+		Program3 program = new Program3();
+		final int n = 10;
+		int H = 40;
+		final int maxGrade = 10;
+		program.initialize(n, maxGrade, new GradeFunction() {
+			@Override
+			public int grade(int classID, int hours) {
+				if(hours == n - classID) return Math.min(maxGrade, classID);
+				return 0;
+			}
+		});
+		assertEquals(40, sum(program.computeHours(H)));
+		assertEquals(44, sum(program.computeGrades(H)));
+	}
+
+	public void testAllMax() throws Exception {
+		Program3 program = new Program3();
+		int n = 10;
+		int H = 40;
+		final int maxGrade = 10;
+		program.initialize(n, maxGrade, new GradeFunction() {
+			@Override
+			public int grade(int classID, int hours) {
+				return maxGrade;
+			}
+		});
+		assertEquals(0, sum(program.computeHours(H)));
+		assertEquals(100, sum(program.computeGrades(H)));
+	}
 }

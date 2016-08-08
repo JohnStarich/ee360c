@@ -62,14 +62,28 @@ public class Program3 implements IProgram3 {
 			for(int hoursOffset = 0; hoursOffset < totalHours && bestClassToWorkOn == -1; hoursOffset++) {
 				for (int classIndex = 0; classIndex < numClasses; classIndex++) {
 					int currentClassHours = hours[classIndex];
-					int gradeAfterWorkingAnotherHour = allPossibleGrades[classIndex][currentClassHours + 1 + hoursOffset] - allPossibleGrades[classIndex][currentClassHours + hoursOffset];
+					int hourGradeIndex = currentClassHours + hoursOffset;
+					// if somehow this puts over the maximum number of hours into a single course
+					// then grade increase from previous hour index is 0
+					// else calculate grade increase
+					int gradeAfterWorkingAnotherHour = 0;
+					if(hourGradeIndex + 1 < allPossibleGrades[classIndex].length) {
+						gradeAfterWorkingAnotherHour = allPossibleGrades[classIndex][hourGradeIndex + 1] - allPossibleGrades[classIndex][hourGradeIndex];
+					}
 
+					// if the grade can improve with this class over the last best improvement
+					// then mark this class index down and remember the increase value
 					if (gradeAfterWorkingAnotherHour > bestClassGradeAddition) {
 						bestClassGradeAddition = gradeAfterWorkingAnotherHour;
 						bestClassToWorkOn = classIndex;
 					}
 				}
 			}
+			// if there are no more hours in which one can improve their grade, just don't work anymore
+			if(bestClassToWorkOn == -1) {
+				return hours;
+			}
+			// else increase this class's number of hours by one
 			hours[bestClassToWorkOn] += 1;
 		}
 		return hours;
