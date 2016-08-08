@@ -13,7 +13,6 @@ public class Driver {
 		int sum_grade;
 		int maxGrade = 100;
 		GradeFunction gradeFunction = new SquareRootGradeFunction(numClasses, maxGrade);
-//		CustomGradeFunction gradeFunction = new CustomGradeFunction(n, maxgrade);
 
 		program.initialize(numClasses, maxGrade, gradeFunction);
 		int[] hours_array = program.computeHours(totalHours);

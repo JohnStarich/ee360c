@@ -25,7 +25,8 @@ public class Program3Test extends TestCase {
 		Program3 program = new Program3();
 		int n = 10;
 		int H = 40;
-		program.initialize(n, 3, new SquareRootGradeFunction(n, 3));
+		int maxGrade = 3;
+		program.initialize(n, maxGrade, new SquareRootGradeFunction(n, maxGrade));
 
 		assertEquals(H, sum(program.computeHours(H)));
 	}
@@ -34,14 +35,34 @@ public class Program3Test extends TestCase {
 		Program3 program = new Program3();
 		int n = 10;
 		int H = 40;
-		program.initialize(n, 3, new SquareRootGradeFunction(n, 3));
+		int maxGrade = 3;
+		program.initialize(n, maxGrade, new SquareRootGradeFunction(n, maxGrade));
 		assertEquals(22, sum(program.computeGrades(H)));
 	}
 
-	public void testComputeGradesCustom() {
+	public void testComputeGradesCustom() throws Exception {
 		Program3 program = new Program3();
-		program.initialize(10, 20, new CustomGradeFunction(10, 20));
+		int n = 10;
+		int H = 20;
+		int maxGrade = 10;
+		program.initialize(n, maxGrade, new CustomGradeFunction(n, maxGrade));
 
-		assertEquals(35, sum(program.computeGrades(20)));
+		assertEquals(35, sum(program.computeGrades(H)));
+	}
+
+	public void testSuccessiveRunsOnProgram() throws Exception {
+		Program3 program = new Program3();
+		int n = 10;
+		int H = 40;
+		int maxGrade = 10;
+		program.initialize(n, maxGrade, new SquareRootGradeFunction(n, maxGrade));
+		assertEquals(H, sum(program.computeHours(H)));
+		assertEquals(22, sum(program.computeGrades(H)));
+
+		H = 20;
+		assertEquals(15, sum(program.computeGrades(H)));
+
+		H = 80;
+		assertEquals(31, sum(program.computeGrades(H)));
 	}
 }
