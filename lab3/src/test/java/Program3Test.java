@@ -2,7 +2,8 @@ import junit.framework.TestCase;
 
 /**
  * Test Program 3: Dynamic Programming
- * Created by johnstarich on 8/3/16.
+ * EID: js68634
+ * Created by John Starich on 8/3/16.
  */
 public class Program3Test extends TestCase {
 	private int sum(int[] integers) {
@@ -60,6 +61,7 @@ public class Program3Test extends TestCase {
 		assertEquals(49, sum(program.computeGrades(H)));
 	}
 
+	/** Test successive calls to Program3 don't corrupt the state of the instance */
 	public void testSuccessiveRunsOnProgram() throws Exception {
 		Program3 program = new Program3();
 		int n = 10;
@@ -76,6 +78,7 @@ public class Program3Test extends TestCase {
 		assertEquals(31, sum(program.computeGrades(H)));
 	}
 
+	/** Test case where no work can be done to improve the overall grade */
 	public void testAllZeros() throws Exception {
 		Program3 program = new Program3();
 		int n = 10;
@@ -91,6 +94,7 @@ public class Program3Test extends TestCase {
 		assertEquals(0, sum(program.computeGrades(H)));
 	}
 
+	/** Test another custom grade function for completeness sake. */
 	public void testIncreaseOnClassId() throws Exception {
 		Program3 program = new Program3();
 		final int n = 10;
@@ -107,6 +111,7 @@ public class Program3Test extends TestCase {
 		assertEquals(44, sum(program.computeGrades(H)));
 	}
 
+	/** Ensure that if every class is an easy-A then no work is done at all. */
 	public void testAllMax() throws Exception {
 		Program3 program = new Program3();
 		int n = 10;

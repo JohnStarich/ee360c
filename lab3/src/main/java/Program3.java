@@ -1,6 +1,8 @@
 /**
  * Program 3: Dynamic Programming
- * @author johnstarich
+ *
+ * EID: js68634
+ * @author John Starich
  */
 public class Program3 implements IProgram3 {
 	private int numClasses;

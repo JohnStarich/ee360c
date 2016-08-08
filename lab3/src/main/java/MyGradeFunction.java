@@ -1,6 +1,7 @@
 /**
  * Custom grade function for Lab 3
- * Created by johnstarich on 8/7/16.
+ * EID: js68634
+ * Created by John Starich on 8/7/16.
  */
 public class MyGradeFunction implements GradeFunction {
 	private int numClasses;
