@@ -49,6 +49,10 @@ public class Program2 extends VertexNetwork {
 	 * implements the GPSR algorithm.
 	 */
 	public Vector<Vertex> gpsrPath(int sourceIndex, int sinkIndex) {
+		return gpsrPathIterative(sourceIndex, sinkIndex);
+	}
+
+	public Vector<Vertex> gpsrPathIterative(int sourceIndex, int sinkIndex) {
 		/*
 		while our current index is not the destination; do
 			add current vertex to path
@@ -70,22 +74,13 @@ public class Program2 extends VertexNetwork {
 
 			int smallestDistanceIndex = -1;
 			double smallestDistance = currentVertex.distance(endVertex);
-			for (Edge edge : edges) {
-				int startIndex = edge.getU();
-				int endIndex = edge.getV();
-				if(endIndex == currentIndex) {
-					// swap
-					int tmp = startIndex;
-					startIndex = endIndex;
-					endIndex = tmp;
-				}
-				// if this edge starts from the current node and we haven't visited it before
-				if(startIndex == currentIndex && ! path.contains(location.get(endIndex))) {
-					// find smallest distance toward the end, hold onto the index
+			for(int endIndex = 0; endIndex < location.size(); endIndex++) {
+				if(endIndex != currentIndex) {
 					Vertex next = location.get(endIndex);
-					double distanceToNext = currentVertex.distance(next);
 					double distanceFromNextToEnd = endVertex.distance(next);
-					if(distanceToNext <= transmissionRange && distanceFromNextToEnd < smallestDistance) {
+					if (distanceFromNextToEnd < smallestDistance &&
+						currentVertex.distance(next) <= transmissionRange
+						) {
 						smallestDistance = distanceFromNextToEnd;
 						smallestDistanceIndex = endIndex;
 					}
@@ -98,6 +93,43 @@ public class Program2 extends VertexNetwork {
 			currentIndex = smallestDistanceIndex;
 		}
 		path.add(endVertex);
+		return path;
+	}
+
+	public Vector<Vertex> gpsrPathRecursive(int sourceIndex, int sinkIndex) {
+		if (sourceIndex == sinkIndex) {
+			Vector<Vertex> path = new Vector<>(1);
+			path.add(location.get(sinkIndex));
+			return path;
+		}
+
+		Vertex sinkVertex = location.get(sinkIndex);
+		Vertex currentVertex = location.get(sourceIndex);
+
+		int smallestDistanceIndex = -1;
+		double smallestDistance = currentVertex.distance(sinkVertex);
+		for(int endIndex = 0; endIndex < location.size(); endIndex++) {
+			if(endIndex != sourceIndex) {
+				Vertex next = location.get(endIndex);
+				double distanceFromNextToEnd = sinkVertex.distance(next);
+				if (distanceFromNextToEnd < smallestDistance &&
+					currentVertex.distance(next) <= transmissionRange
+					) {
+					smallestDistance = distanceFromNextToEnd;
+					smallestDistanceIndex = endIndex;
+				}
+			}
+		}
+
+		// if there is no way to the sink from here, return no path
+		if (smallestDistanceIndex == -1) return new Vector<>(0);
+
+		Vector<Vertex> path = new Vector<>(1);
+		Vector<Vertex> nextPath = gpsrPath(smallestDistanceIndex, sinkIndex);
+		if(nextPath.contains(sinkVertex)) {
+			path.add(currentVertex);
+			path.addAll(nextPath);
+		}
 		return path;
 	}
 
