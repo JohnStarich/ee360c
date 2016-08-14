@@ -140,7 +140,9 @@ public class Program2 extends VertexNetwork {
 		return pathLatencies;
 	}
 
-	public Vector<Edge> dijkstraAdjacentVertices(int vertex) {
+	public Vector<Edge> dijkstraAdjacentVertices(Map<Integer, Vector<Edge>> adjacentEdgeCache, int vertex) {
+		if(adjacentEdgeCache.containsKey(vertex)) return adjacentEdgeCache.get(vertex);
+
 		Vector<Edge> adjacentEdges = new Vector<>();
 		for(Edge edge : edges) {
 			if(vertex == edge.getV()) {
@@ -150,6 +152,7 @@ public class Program2 extends VertexNetwork {
 				adjacentEdges.add(edge);
 			}
 		}
+		adjacentEdgeCache.put(vertex, adjacentEdges);
 		return adjacentEdges;
 	}
 
@@ -174,7 +177,6 @@ public class Program2 extends VertexNetwork {
 				for each vertex in Adj[u]:
 					RELAX(u, v, w)
 		 */
-		Vector<Vertex> path = new Vector<>();
 		// initialize single source
 		Vector<DijkstraNode> nodes = new Vector<>(location.size());
 		PriorityQueue<DijkstraNode> pathLatencies = new PriorityQueue<>(location.size());
@@ -185,10 +187,12 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
+		Map<Integer, Vector<Edge>> adjacentEdgeCache = new HashMap<>(location.size());
+
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
-			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
+			for (Edge edge : dijkstraAdjacentVertices(adjacentEdgeCache, currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
 				double cost = edge.getW();
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
@@ -212,6 +216,7 @@ public class Program2 extends VertexNetwork {
 			reversedPath.add(currentNode);
 			currentNode = currentNode.predecessor;
 		}
+		Vector<Vertex> path = new Vector<>();
 		while(! reversedPath.isEmpty()) {
 			path.add(location.get(reversedPath.pop().nodeIndex));
 		}
@@ -228,7 +233,6 @@ public class Program2 extends VertexNetwork {
 	 * implements Dijkstra's algorithm.
 	 */
 	public Vector<Vertex> dijkstraPathHops(int sourceIndex, int sinkIndex) {
-		Vector<Vertex> path = new Vector<>();
 		// initialize single source
 		Vector<DijkstraNode> nodes = new Vector<>(location.size());
 		PriorityQueue<DijkstraNode> pathLatencies = new PriorityQueue<>(location.size());
@@ -239,10 +243,12 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
+		Map<Integer, Vector<Edge>> adjacentEdgeCache = new HashMap<>(location.size());
+
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
-			for (Edge edge : dijkstraAdjacentVertices(currentNode.nodeIndex)) {
+			for (Edge edge : dijkstraAdjacentVertices(adjacentEdgeCache, currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
 				double cost = 1;
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
@@ -266,6 +272,7 @@ public class Program2 extends VertexNetwork {
 			reversedPath.add(currentNode);
 			currentNode = currentNode.predecessor;
 		}
+		Vector<Vertex> path = new Vector<>();
 		while(! reversedPath.isEmpty()) {
 			path.add(location.get(reversedPath.pop().nodeIndex));
 		}
