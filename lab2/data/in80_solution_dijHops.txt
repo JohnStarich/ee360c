@@ -1,0 +1,3 @@
+Dijkstra's algorithm (Min Hops) is successful 1092/3160 times.
+The average time taken by Dijkstra's algorithm (Min Hops) on successful runs is 146656 nanoseconds.
+
