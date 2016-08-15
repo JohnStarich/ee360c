@@ -76,6 +76,19 @@ public class Program3Test extends TestCase {
 
 		H = 80;
 		assertEquals(31, sum(program.computeGrades(H)));
+
+		n = 20;
+		H = 40;
+		maxGrade = 10;
+		program.initialize(n, maxGrade, new SquareRootGradeFunction(n, maxGrade));
+		assertEquals(H, sum(program.computeHours(H)));
+		assertEquals(30, sum(program.computeGrades(H)));
+
+		H = 20;
+		assertEquals(20, sum(program.computeGrades(H)));
+
+		H = 80;
+		assertEquals(45, sum(program.computeGrades(H)));
 	}
 
 	/** Test case where no work can be done to improve the overall grade */
