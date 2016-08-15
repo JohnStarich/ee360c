@@ -20,6 +20,7 @@ public class Program3 implements IProgram3 {
 		this.numClasses = numClasses;
 		this.maxGrade = maxGrade;
 		this.gradeFunction = gradeFunction;
+		allPossibleGrades = null;
 	}
 
 	/**
@@ -28,7 +29,7 @@ public class Program3 implements IProgram3 {
 	 * @return all possible grades for all classes with a max number of hours
 	 */
 	private int[][] computeAllGrades(int totalHours) {
-		if(allPossibleGrades != null && totalHours == allPossibleGrades[0].length - 1) {
+		if(allPossibleGrades != null) {
 			return allPossibleGrades;
 		}
 		allPossibleGrades = new int[numClasses][totalHours + 1];
