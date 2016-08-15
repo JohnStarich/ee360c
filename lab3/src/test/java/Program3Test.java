@@ -1,5 +1,7 @@
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+
 /**
  * Test Program 3: Dynamic Programming
  * EID: js68634
@@ -138,5 +140,28 @@ public class Program3Test extends TestCase {
 		});
 		assertEquals(0, sum(program.computeHours(H)));
 		assertEquals(100, sum(program.computeGrades(H)));
+	}
+
+	public void testSquareRootMore() throws Exception {
+		Program3 program = new Program3();
+		int[][] solutions = {
+			//n, H, maxGrade, sumHours, sumGrades
+			{2, 400, 10, 182, 20},
+			{2, 2, 10, 2, 2},
+			{4, 100, 8, 100, 21},
+		};
+		for(int[] solution : solutions) {
+			assertEquals("Error in solution for testSquareRootMore: length of solution is not 5", 5, solution.length);
+			int n = solution[0];
+			int H = solution[1];
+			int maxGrade = solution[2];
+			System.out.printf("Initializing program with n = %d, H = %d, maxGrade = %d\n", n, H, maxGrade);
+			program.initialize(n, maxGrade, new SquareRootGradeFunction(n, maxGrade));
+			int hours[] = program.computeHours(H);
+			int grades[] = program.computeGrades(H);
+			System.out.printf("hours = %s\ngrades = %s\n", Arrays.toString(hours), Arrays.toString(grades));
+			assertEquals("Sum of hours is incorrect", solution[3], sum(hours));
+			assertEquals("Sum of grades is incorrect", solution[4], sum(grades));
+		}
 	}
 }
