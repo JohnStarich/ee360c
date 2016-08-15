@@ -24,20 +24,26 @@ import java.util.*;
  * add new fields to the Program2 class.
  */
 public class Program2 extends VertexNetwork {
+	private Map<Integer, Vector<Edge>> adjacentEdgesCache = null;
+
 	Program2() {
 		super();
+		dijkstraAdjacentEdges();
 	}
 
 	Program2(String locationFile) {
 		super(locationFile);
+		dijkstraAdjacentEdges();
 	}
 
 	Program2(String locationFile, double transmissionRange) {
 		super(locationFile, transmissionRange);
+		dijkstraAdjacentEdges();
 	}
 
 	Program2(double transmissionRange, String locationFile) {
 		super(transmissionRange, locationFile);
+		dijkstraAdjacentEdges();
 	}
 
 	/**
@@ -141,6 +147,7 @@ public class Program2 extends VertexNetwork {
 	}
 
 	public Map<Integer, Vector<Edge>> dijkstraAdjacentEdges() {
+		if(adjacentEdgesCache != null) return adjacentEdgesCache;
 		Map<Integer, Vector<Edge>> adjacentEdges = new HashMap<>(location.size());
 
 		for(Edge edge : edges) {
@@ -152,9 +159,9 @@ public class Program2 extends VertexNetwork {
 			if(! adjacentEdges.containsKey(edge.getV())) {
 				adjacentEdges.put(edge.getV(), new Vector<Edge>());
 			}
-			Edge reverseEdge = new Edge(edge.getV(), edge.getU(), edge.getW());
-			adjacentEdges.get(edge.getV()).add(reverseEdge);
+			adjacentEdges.get(edge.getV()).add(edge);
 		}
+		adjacentEdgesCache = adjacentEdges;
 		return adjacentEdges;
 	}
 
@@ -195,9 +202,10 @@ public class Program2 extends VertexNetwork {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
 			for (Edge edge : adjacentEdges.get(currentNode.nodeIndex)) {
-				Vertex adjacentVertex = location.get(edge.getV());
+				int adjacentIndex = edge.getU() == currentNode.nodeIndex ? edge.getV() : edge.getU();
+				Vertex adjacentVertex = location.get(adjacentIndex);
 				double cost = edge.getW();
-				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
+				DijkstraNode adjacentDijkstraNode = nodes.get(adjacentIndex);
 				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
 					pathLatencies.remove(adjacentDijkstraNode);
 					adjacentDijkstraNode.cost = currentNode.cost + cost;
@@ -208,21 +216,7 @@ public class Program2 extends VertexNetwork {
 		}
 
 		// reverse and return the current path = O(V)
-		DijkstraNode currentNode = nodes.get(sinkIndex);
-		// if the last node doesn't have a predecessor and it should, then return non-existent path
-		if(currentNode.predecessor == null && sourceIndex != sinkIndex) {
-			return new Vector<>(0);
-		}
-		Stack<DijkstraNode> reversedPath = new Stack<>();
-		while(currentNode != null) {
-			reversedPath.add(currentNode);
-			currentNode = currentNode.predecessor;
-		}
-		Vector<Vertex> path = new Vector<>();
-		while(! reversedPath.isEmpty()) {
-			path.add(location.get(reversedPath.pop().nodeIndex));
-		}
-		return path;
+		return pathFromDijkstraNode(nodes.get(sinkIndex), sourceIndex, sinkIndex);
 	}
 
 	/**
@@ -251,9 +245,10 @@ public class Program2 extends VertexNetwork {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
 			for (Edge edge : adjacentEdges.get(currentNode.nodeIndex)) {
-				Vertex adjacentVertex = location.get(edge.getV());
+				int adjacentIndex = edge.getU() == currentNode.nodeIndex ? edge.getV() : edge.getU();
+				Vertex adjacentVertex = location.get(adjacentIndex);
 				double cost = 1;
-				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
+				DijkstraNode adjacentDijkstraNode = nodes.get(adjacentIndex);
 				if (currentNode.cost + cost < adjacentDijkstraNode.cost && adjacentVertex.distance(currentVertex) <= transmissionRange) {
 					pathLatencies.remove(adjacentDijkstraNode);
 					adjacentDijkstraNode.cost = currentNode.cost + cost;
@@ -264,15 +259,18 @@ public class Program2 extends VertexNetwork {
 		}
 
 		// reverse and return the current path = O(V)
-		DijkstraNode currentNode = nodes.get(sinkIndex);
+		return pathFromDijkstraNode(nodes.get(sinkIndex), sourceIndex, sinkIndex);
+	}
+
+	private Vector<Vertex> pathFromDijkstraNode(DijkstraNode node, int sourceIndex, int sinkIndex) {
 		// if the last node doesn't have a predecessor and it should, then return non-existent path
-		if(currentNode.predecessor == null && sourceIndex != sinkIndex) {
+		if(node.predecessor == null && sourceIndex != sinkIndex) {
 			return new Vector<>(0);
 		}
 		Stack<DijkstraNode> reversedPath = new Stack<>();
-		while(currentNode != null) {
-			reversedPath.add(currentNode);
-			currentNode = currentNode.predecessor;
+		while(node != null) {
+			reversedPath.add(node);
+			node = node.predecessor;
 		}
 		Vector<Vertex> path = new Vector<>();
 		while(! reversedPath.isEmpty()) {
