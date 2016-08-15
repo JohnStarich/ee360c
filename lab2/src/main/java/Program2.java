@@ -140,19 +140,21 @@ public class Program2 extends VertexNetwork {
 		return pathLatencies;
 	}
 
-	public Vector<Edge> dijkstraAdjacentVertices(Map<Integer, Vector<Edge>> adjacentEdgeCache, int vertex) {
-		if(adjacentEdgeCache.containsKey(vertex)) return adjacentEdgeCache.get(vertex);
+	public Map<Integer, Vector<Edge>> dijkstraAdjacentEdges() {
+		Map<Integer, Vector<Edge>> adjacentEdges = new HashMap<>(location.size());
 
-		Vector<Edge> adjacentEdges = new Vector<>();
 		for(Edge edge : edges) {
-			if(vertex == edge.getV()) {
-				adjacentEdges.add(new Edge(edge.getV(), edge.getU(), edge.getW()));
+			if(! adjacentEdges.containsKey(edge.getU())) {
+				adjacentEdges.put(edge.getU(), new Vector<Edge>());
 			}
-			if(vertex == edge.getU()) {
-				adjacentEdges.add(edge);
+			adjacentEdges.get(edge.getU()).add(edge);
+
+			if(! adjacentEdges.containsKey(edge.getV())) {
+				adjacentEdges.put(edge.getV(), new Vector<Edge>());
 			}
+			Edge reverseEdge = new Edge(edge.getV(), edge.getU(), edge.getW());
+			adjacentEdges.get(edge.getV()).add(reverseEdge);
 		}
-		adjacentEdgeCache.put(vertex, adjacentEdges);
 		return adjacentEdges;
 	}
 
@@ -187,12 +189,12 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
-		Map<Integer, Vector<Edge>> adjacentEdgeCache = new HashMap<>(location.size());
+		Map<Integer, Vector<Edge>> adjacentEdges = dijkstraAdjacentEdges();
 
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
-			for (Edge edge : dijkstraAdjacentVertices(adjacentEdgeCache, currentNode.nodeIndex)) {
+			for (Edge edge : adjacentEdges.get(currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
 				double cost = edge.getW();
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
@@ -243,12 +245,12 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
-		Map<Integer, Vector<Edge>> adjacentEdgeCache = new HashMap<>(location.size());
+		Map<Integer, Vector<Edge>> adjacentEdges = dijkstraAdjacentEdges();
 
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
 			Vertex currentVertex = location.get(currentNode.nodeIndex);
-			for (Edge edge : dijkstraAdjacentVertices(adjacentEdgeCache, currentNode.nodeIndex)) {
+			for (Edge edge : adjacentEdges.get(currentNode.nodeIndex)) {
 				Vertex adjacentVertex = location.get(edge.getV());
 				double cost = 1;
 				DijkstraNode adjacentDijkstraNode = nodes.get(edge.getV());
