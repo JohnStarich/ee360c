@@ -24,7 +24,7 @@ import java.util.*;
  * add new fields to the Program2 class.
  */
 public class Program2 extends VertexNetwork {
-	private Map<Integer, Vector<Edge>> adjacentEdgesCache = null;
+	private Map<Integer, Edge[]> adjacentEdgesCache = null;
 
 	Program2() {
 		super();
@@ -146,7 +146,7 @@ public class Program2 extends VertexNetwork {
 		return pathLatencies;
 	}
 
-	public Map<Integer, Vector<Edge>> dijkstraAdjacentEdges() {
+	public Map<Integer, Edge[]> dijkstraAdjacentEdges() {
 		if(adjacentEdgesCache != null) return adjacentEdgesCache;
 		Map<Integer, Vector<Edge>> adjacentEdges = new HashMap<>(location.size());
 
@@ -161,8 +161,19 @@ public class Program2 extends VertexNetwork {
 			}
 			adjacentEdges.get(edge.getV()).add(edge);
 		}
-		adjacentEdgesCache = adjacentEdges;
-		return adjacentEdges;
+		adjacentEdgesCache = new HashMap<>();
+		for(Map.Entry<Integer, Vector<Edge>> entry : adjacentEdges.entrySet()) {
+			Edge[] edgesToSort = new Edge[entry.getValue().size()];
+			edgesToSort = entry.getValue().toArray(edgesToSort);
+			Arrays.sort(edgesToSort, new Comparator<Edge>() {
+				@Override
+				public int compare(Edge edge1, Edge edge2) {
+					return (int) (edge2.getW() - edge1.getW());
+				}
+			});
+			adjacentEdgesCache.put(entry.getKey(), edgesToSort);
+		}
+		return adjacentEdgesCache;
 	}
 
 	/**
@@ -196,7 +207,7 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
-		Map<Integer, Vector<Edge>> adjacentEdges = dijkstraAdjacentEdges();
+		Map<Integer, Edge[]> adjacentEdges = dijkstraAdjacentEdges();
 
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
@@ -239,7 +250,7 @@ public class Program2 extends VertexNetwork {
 		}
 		nodes.get(sourceIndex).cost = 0D;
 
-		Map<Integer, Vector<Edge>> adjacentEdges = dijkstraAdjacentEdges();
+		Map<Integer, Edge[]> adjacentEdges = dijkstraAdjacentEdges();
 
 		while (! pathLatencies.isEmpty()) {
 			DijkstraNode currentNode = pathLatencies.poll();
